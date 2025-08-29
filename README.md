@@ -1,2 +1,55 @@
-# crop_yield_prediction
-Trains and evaluates ML models for Crop Yield Prediction task. 
+# Crop Yield Prediction on NUTS3 region
+This repository trains and evaluates machine learning models for crop yield prediction using the CY-BENCH dataset.
+
+# Setup Instructions
+#### Prerequisites
+* Python 3.10+
+* Conda package manager
+
+#### Installation
+##### 1. Create and activate a Conda environment:
+```
+conda create -n CYP python=3.10
+conda activate CYP
+```
+
+##### 2.  Clone the CY-BENCH repository:
+'''
+git clone https://github.com/WUR-AI/AgML-CY-BENCH.git
+'''
+
+Install the dependencies as indicated at the [CY-BENCH](https://github.com/wur-ai/agml-cy-bench) repository.
+
+##### Step 3: Clone this repository:
+
+```
+cd AgML-CY-BENCH/cybench
+git clone https://github.com/your-username/crop_yield_prediction.git
+mv -r crop_yield_prediction/* ./
+rm -rf crop_yield_prediction
+```
+
+##### Step 4: Install project dependencies:
+```
+pip install -r requirements.txt
+```
+
+##### Step 5: Data Download
+Download the maize and wheat datasets from [CY-BENCH data](https://zenodo.org/records/13838912) on Zenodo and place them in:
+
+'''
+AgML-CY-BENCH/cybench/data/
+'''
+
+The directory structure should look like:
+```
+AgML-CY-BENCH/
+├── cybench/
+│   ├── data/
+│   │   ├── maize/
+│   │   └── wheat/
+│   ├── train/          (from crop_yield_prediction)
+|   ├── requirements.txt  (from crop_yield_prediction
+|   └──  (other folders and files from CY-BENCH)
+└── (other files from CY-BENCH)
+```
