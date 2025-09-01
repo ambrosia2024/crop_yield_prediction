@@ -11,6 +11,7 @@ This repository trains and evaluates machine learning models for crop yield pred
 ```
 conda create -n CYP python=3.10
 conda activate CYP
+conda env update --name CYP --file environment.yml --prune
 ```
 
 ##### 2.  Clone the CY-BENCH repository:
@@ -48,8 +49,10 @@ AgML-CY-BENCH/
 │   ├── data/
 │   │   ├── maize/
 │   │   └── wheat/
-│   ├── train/          (from crop_yield_prediction)
-|   ├── requirements.txt  (from crop_yield_prediction
+│   ├── train/           (from crop_yield_prediction)
+│   ├── process/         (from crop_yield_prediction)
+│   ├── architectures/   (from crop_yield_prediction)
+|   ├── environment.yml  (from crop_yield_prediction
 |   └──  (other folders and files from CY-BENCH)
 └── (other files from CY-BENCH)
 ```
