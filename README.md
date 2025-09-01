@@ -61,5 +61,5 @@ AgML-CY-BENCH/
 
 ```
 cd train/
-python statistical_baselines.py --model mlp --country DE --crop wheat --seed 1111 --save_dir ../output/trained_models/
+python statistical_baselines.py --model mlp --country DE --crop wheat --seed 1111 --save_dir ../output/saved_models/ --output_dir ../output/trained_models/
 ```
