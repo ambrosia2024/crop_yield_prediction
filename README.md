@@ -56,3 +56,10 @@ AgML-CY-BENCH/
 |   └──  (other folders and files from CY-BENCH)
 └── (other files from CY-BENCH)
 ```
+
+#### Model training and evaluation
+
+```
+cd train/
+python statistical_baselines.py --model mlp --country DE --crop wheat --seed 1111 --save_dir ../output/trained_models/
+```
