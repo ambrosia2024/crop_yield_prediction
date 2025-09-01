@@ -38,9 +38,9 @@ pip install -r requirements.txt
 ##### Step 5: Data Download
 Download the maize and wheat datasets from [CY-BENCH data](https://zenodo.org/records/13838912) on Zenodo and place them in:
 
-'''
+```
 AgML-CY-BENCH/cybench/data/
-'''
+```
 
 The directory structure should look like:
 ```
