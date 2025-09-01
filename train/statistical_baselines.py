@@ -1,0 +1,75 @@
+# %% Importing libraries 
+import os, sys
+import argparse
+from tqdm import tqdm
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+
+from sklearn.metrics import r2_score, mean_absolute_percentage_error, mean_squared_error
+
+from cybench.datasets.configured import load_dfs_crop
+from cybench.datasets.dataset import Dataset as CYDataset
+
+sys.path.append('../process/')
+from helpers import verify_parameters, select_country, seed_uniformly
+from load_data import prepare_features_and_targets
+from validate_model import evaluate_predictions_by_year, store_model_results, evaluate_OOD_results_from_countries
+
+sys.path.append('../architectures/')
+from sklearn_models import generate_statistical_pipeline
+
+import warnings
+warnings.filterwarnings('ignore')
+
+# %% Setting up the Argparser
+parser = argparse.ArgumentParser(description="Trains sklearn models to perform crop yield prediction task.")
+parser.add_argument('--crop', type=str, default="wheat", help="Name of the crop.")
+parser.add_argument('--model', type=str, default="ridge", help="Name of the model to be trained.")
+parser.add_argument('--country', type=str, default="DE", help="Country data to be trained on.")
+parser.add_argument('--save_dir', type=str, default="../output/trained_models/", help="""Directory for models to be saved""")
+parser.add_argument('--seed', type=int, default=1111, help='Random seed value')
+args = parser.parse_args()
+
+# Creating output directory if it doesn't exist
+Path(args.save_dir).mkdir(parents=True, exist_ok=True)
+
+# Verifying if the pipeline for selected crop, model, and country is implemented
+verify_parameters(crop=args.crop, model=args.model, country=args.country)
+
+# Managing reproducibility
+seed_uniformly(seed=args.seed)
+
+# %% Loading the data for training
+# Loading the country of interest
+args.country = select_country(crop=args.crop, country=args.country)
+
+# Loading the aligned data from CY-BENCH library (targets + inputs)
+df_y, dfs_x = load_dfs_crop(args.crop, countries=args.country)
+# Building CY-Bench dataset object
+ds = CYDataset(crop=args.crop, data_target=df_y, data_inputs=dfs_x)
+
+# Splitting training (before 2018) and test-set (2018 and after)
+years_sorted = sorted(list(ds.years))
+train_years = [y for y in years_sorted if y <= 2017]
+test_years  = [y for y in years_sorted if y >= 2018]
+train_ds, test_ds = ds.split_on_years((train_years, test_years))
+
+X_train, y_train, years_train = prepare_features_and_targets(train_ds)
+X_test, y_test, years_test = prepare_features_and_targets(test_ds)
+
+# %% Build Model and Training Pipeline
+pipeline = generate_statistical_pipeline(model_name=args.model, seed=args.seed)
+pipeline.fit(X_train, y_train)
+
+# %% Predicting and testing the model
+y_pred = pipeline.predict(X_test)
+results_by_year = evaluate_predictions_by_year(y_test, y_pred, years_test)
+print("Model Performance by Year:", results_by_year)
+
+# Storing results
+_ = store_model_results(results_dict=results_by_year, model_name=args.model, country=args.country, crop=args.crop, file_path=os.path.join(args.save_dir, f"sklearn_models.csv"))
+
+# %% Evaluating the trained model on EU countries
+evaluate_OOD_results_from_countries(crop=args.crop, model_name=args.model, pipeline=pipeline, file_path=os.path.join(args.save_dir, f"sklearn_models.csv"))
